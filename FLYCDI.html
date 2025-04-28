@@ -1,0 +1,84 @@
+<html >
+<head id="Head1" >
+    <title></title>
+        <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        iframe {
+            width: 90%;
+            height: 600px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+    </style>
+    <style type="text/css">
+        body
+        {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+        #chart
+        {
+            width: 900px;
+            height: 900px;
+        }
+        #chart div
+        {
+            width: 100px;
+        }
+        #chart img
+        {
+            height: 90px;
+            width: 90px;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", { packages: ["orgchart"] });
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            $.ajax({
+                type: "POST",
+                url: "VB.aspx/GetChartData",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Entity');
+                    data.addColumn('string', 'ParentEntity');
+                    data.addColumn('string', 'ToolTip');
+                    for (var i = 0; i < r.d.length; i++) {
+                        var memberId = r.d[i][0].toString();
+                        var memberName = r.d[i][1];
+                        var parentId = r.d[i][2] != null ? r.d[i][2].toString() : '';
+                        data.addRows([[{
+                            v: memberId,
+                            f: memberName + '<div><img src = "Pictures/' + memberId + '.jpg" /></div>'
+                        }, parentId, memberName]]);
+                    }
+                    var chart = new google.visualization.OrgChart($("#chart")[0]);
+                    chart.draw(data, { allowHtml: true });
+                },
+                failure: function (r) {
+                    alert(r.d);
+                },
+                error: function (r) {
+                    alert(r.d);
+                }
+            });
+        }
+    </script>
+
+       
+
+    <iframe src="http://119.23.60.118/#/index" frameborder="0" allowfullscreen></iframe>
+    </form>
+</body>
+</html>
